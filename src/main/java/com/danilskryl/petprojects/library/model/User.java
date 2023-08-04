@@ -3,13 +3,16 @@ package com.danilskryl.petprojects.library.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "library_users", schema = "pet_project")
 @Getter
 @Setter
+@ToString
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,12 +21,13 @@ public class User {
     private String username;
     @Column(nullable = false, length = 128)
     private String password;
-    @Column(nullable = false, length = 100)
-    private String name;
-    @Column(nullable = false, length = 100)
-    private String surname;
-    @Column
-    private Integer age;
+    @Column(name = "first_name", nullable = false, length = 100)
+    private String firstName;
+    @Column(name = "last_name", nullable = false, length = 100)
+    private String lastName;
+    @Column(nullable = false)
+    @Temporal(TemporalType.DATE)
+    private Date birthDate;
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "books",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
