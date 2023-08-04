@@ -4,17 +4,18 @@ import com.danilskryl.petprojects.library.model.Book;
 import com.danilskryl.petprojects.library.model.User;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 public class LibraryManager {
-    private static DBManager dbManager;
+    private static final LibraryManager libraryManager = new LibraryManager();
+    private final DBManager dbManager;
 
-    private LibraryManager() {}
+    private LibraryManager() {
+        dbManager = new DBManager();
+    }
 
-    public DBManager getDBManager() {
-        if (dbManager == null) {
-            dbManager = new DBManager();
-        }
-        return dbManager;
+    public static LibraryManager getInstance() {
+        return libraryManager;
     }
 
     public User getUserById(Long id) {
@@ -45,6 +46,24 @@ public class LibraryManager {
             Transaction transaction = session.beginTransaction();
             session.remove(user);
             transaction.commit();
+        }
+    }
+
+    public boolean isUserExist(String login, String password) {
+        return getUserByLoginAndPassword(login, password) != null;
+    }
+
+    public User getUserByLoginAndPassword(String login, String password) {
+        try (Session session = dbManager.getSessionFactory().openSession()) {
+            String hql = "FROM User WHERE username = :USER_LOGIN AND password = :USER_PASSWORD";
+            Query<User> query = session.createQuery(hql, User.class);
+            query.setParameter("USER_LOGIN", login);
+            query.setParameter("USER_PASSWORD", password);
+            try {
+                return query.getSingleResult();
+            } catch (Exception e) {
+                return null;
+            }
         }
     }
 
