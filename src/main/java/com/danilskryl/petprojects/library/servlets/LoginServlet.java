@@ -1,7 +1,7 @@
 package com.danilskryl.petprojects.library.servlets;
 
 import com.danilskryl.petprojects.library.model.User;
-import com.danilskryl.petprojects.library.utilities.LibraryManager;
+import com.danilskryl.petprojects.library.repository.LibraryManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -22,7 +22,7 @@ public class LoginServlet extends HttpServlet {
         if (dbManager.isUserExist(login, password)) {
             User user = dbManager.getUserByLoginAndPassword(login, password);
             req.setAttribute("userAccount", user);
-            req.getRequestDispatcher("/library").forward(req, resp);
+            req.getRequestDispatcher("cabinet.jsp").forward(req, resp);
         } else {
             req.getRequestDispatcher("login.jsp").forward(req, resp);
         }

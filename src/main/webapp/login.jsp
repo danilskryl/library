@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="login_page.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link type="Image/x-icon" href="images/icon_book.svg" rel="icon">
     <title>Library</title>
     <script>
         function redirectToServlet() {
