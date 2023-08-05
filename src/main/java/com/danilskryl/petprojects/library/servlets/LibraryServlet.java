@@ -10,19 +10,19 @@ public class LibraryServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
 
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies == null) {
-            response.sendRedirect("/login.jsp");
-        }
-
-        for (Cookie cookie : cookies) {
-
-        }
+//        Cookie[] cookies = request.getCookies();
+//
+//        if (cookies == null) {
+//            response.sendRedirect("/login.jsp");
+//        }
+//
+//        for (Cookie cookie : cookies) {
+//
+//        }
 
         PrintWriter out = response.getWriter();
         out.println("<html><body>");
-        out.println("<h1>" + "</h1>");
+        out.println("<h1>" + "SUCCESSFUL" + "</h1>");
         out.println("</body></html>");
     }
 }

@@ -1,4 +1,4 @@
-package com.danilskryl.petprojects.library.utilities;
+package com.danilskryl.petprojects.library.repository;
 
 import com.danilskryl.petprojects.library.model.Book;
 import com.danilskryl.petprojects.library.model.User;
@@ -7,8 +7,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Properties;
 
 @Getter
