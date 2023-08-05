@@ -1,4 +1,4 @@
-package com.danilskryl.petprojects.library.utilities;
+package com.danilskryl.petprojects.library.repository;
 
 import com.danilskryl.petprojects.library.model.Book;
 import com.danilskryl.petprojects.library.model.User;
