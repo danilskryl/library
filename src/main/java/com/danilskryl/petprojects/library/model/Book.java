@@ -3,8 +3,8 @@ package com.danilskryl.petprojects.library.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
+import lombok.ToString;
+import org.hibernate.annotations.LazyCollection;
 
 @Entity
 @Table(name = "library_books", schema = "pet_project")
@@ -18,6 +18,7 @@ public class Book {
     private String title;
     @Column
     private String author;
-    @ManyToMany(mappedBy = "books")
-    private List<User> users;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

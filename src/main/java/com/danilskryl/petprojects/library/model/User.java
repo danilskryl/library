@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.LazyGroup;
 
 import java.util.Date;
 import java.util.List;
@@ -28,9 +31,6 @@ public class User {
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Date birthDate;
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "books",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"))
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Book> books;
 }
