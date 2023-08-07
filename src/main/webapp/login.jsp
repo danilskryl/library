@@ -2,37 +2,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="images/icon_book.svg"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <link rel="shortcut icon" href="images/icon_book.svg"/>
+
     <link rel="stylesheet" href="login_page.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    <link type="Image/x-icon" href="images/icon_book.svg" rel="icon">
     <title>Library</title>
-    <script>
-        function redirectToServlet() {
-            let login = document.getElementById("login").value;
-            let password = document.getElementById("password").value;
-
-            let usernameErrorElement = document.getElementById("usernameError");
-            let passwordErrorElement = document.getElementById("passwordError");
-
-            if (login === "") {
-                usernameErrorElement.textContent = "Username must be filled out";
-            } else if (password === "") {
-                passwordErrorElement.textContent = "Password must be filled out";
-            } else {
-                window.location.href = "/loginServlet?login=" + encodeURIComponent(login) + "&password=" + encodeURIComponent(password);
-            }
-
-            if (login !== "") {
-                usernameErrorElement.textContent = "";
-            }
-            if (password !== "") {
-                passwordErrorElement.textContent = "";
-            }
-        }
-    </script>
 
     <script>
         function redirectToRegistration() {
@@ -41,6 +25,17 @@
     </script>
 </head>
 <body>
+<%
+    Cookie[] cookies = request.getCookies();
+
+    if (cookies != null) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("id")) {
+                response.sendRedirect("cabinet.jsp");
+            }
+        }
+    }
+%>
 <section class="h-100 gradient-form" style="background-color: #eee;">
     <div class="container py-5 h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
@@ -56,24 +51,25 @@
                                     <h4 class="mt-1 mb-5 pb-1">Library of Danil Skryl</h4>
                                 </div>
 
-                                <form name="loginForm">
+                                <form name="loginForm" method="post"
+                                      action="${pageContext.request.contextPath}/loginServlet">
                                     <p>Please login to your account</p>
 
                                     <div class="form-outline mb-4">
-                                        <input type="email" id="login" class="form-control"
+                                        <input type="text" name="login" id="login" class="form-control"
                                                placeholder="Username" required/>
                                         <span id="usernameError" style="color: red;"></span>
                                     </div>
 
                                     <div class="form-outline mb-4">
-                                        <input type="password" id="password" class="form-control"
+                                        <input type="password" name="password" id="password" class="form-control"
                                                placeholder="Password" required/>
                                         <span id="passwordError" style="color: red;"></span>
                                     </div>
 
                                     <div class="text-center pt-1 mb-5 pb-1">
                                         <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3"
-                                                type="button" onclick="redirectToServlet()">Log in
+                                                type="submit">Log in
                                         </button>
                                         <a class="text-muted" href="#!">Forgot password?</a>
                                     </div>
@@ -93,7 +89,7 @@
                             <div class="text-white px-3 py-4 p-md-5 mx-md-4">
                                 <h4 class="mb-4">We are more than just a library</h4>
                                 <p class="small mb-0">It's a place where you can add your books and management it. You
-                                    have a personal cabinet where you can add information about you. Also, how i said
+                                    have a personal cabinet where you can add information about you. Also, how I said
                                     before,
                                     you can add book, delete or update it. Enjoy!</p>
                             </div>

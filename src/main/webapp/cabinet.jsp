@@ -1,9 +1,10 @@
 <%@ page import="com.danilskryl.petprojects.library.model.User" %>
 <%@ page import="java.util.Date" %>
+<%@ page import="com.danilskryl.petprojects.library.model.Book" %>
+<%@ page import="com.danilskryl.petprojects.library.repository.LibraryManager" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Library</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -13,7 +14,20 @@
 <body>
 
 <%
-    User user = (User) request.getAttribute("userAccount");
+    final LibraryManager dbManager = LibraryManager.getInstance();
+
+    Cookie[] cookies = request.getCookies();
+    long id = 0;
+
+    for (Cookie cookie : cookies) {
+        if (cookie.getName().equals("id")) {
+            id = Long.parseLong(cookie.getValue());
+            break;
+        }
+    }
+
+    User user = dbManager.getUserById(id);
+
     String firstName = user.getFirstName();
     String lastName = user.getLastName();
     String fullName = firstName + " " + lastName;
@@ -22,6 +36,12 @@
 %>
 
 <section style="background-color: #eee;">
+    <div>
+        <form action="${pageContext.request.contextPath}/logout" method="post"
+              style="position: absolute; top: 10px; right: 10px;">
+            <input class="btn btn-danger" type="submit" value="Log out">
+        </form>
+    </div>
     <div class="container py-5">
         <div class="row">
             <div class="col">
@@ -37,9 +57,11 @@
             <div class="col-lg-4">
                 <div class="card mb-4">
                     <div class="card-body text-center">
-                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
+                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+                             alt="avatar"
                              class="rounded-circle img-fluid" style="width: 150px;">
-                        <h5 class="my-3"><%= fullName %></h5>
+                        <h5 class="my-3"><%= fullName %>
+                        </h5>
                         <p class="text-muted mb-1">Full Stack Developer</p>
                         <p class="text-muted mb-4">Bay Area, San Francisco, CA</p>
                         <div class="d-flex justify-content-center mb-2">
@@ -83,7 +105,8 @@
                                 <p class="mb-0">Full Name</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0"><%= fullName %></p>
+                                <p class="text-muted mb-0"><%= fullName %>
+                                </p>
                             </div>
                         </div>
                         <hr>
@@ -92,7 +115,8 @@
                                 <p class="mb-0">Username</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0"><%= username %></p>
+                                <p class="text-muted mb-0"><%= username %>
+                                </p>
                             </div>
                         </div>
                         <hr>
@@ -101,7 +125,7 @@
                                 <p class="mb-0">Phone</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0">(097) 234-5678</p>
+                                <p class="text-muted mb-0">-</p>
                             </div>
                         </div>
                         <hr>
@@ -110,7 +134,8 @@
                                 <p class="mb-0">Birthday</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0"><%= birthDate %></p>
+                                <p class="text-muted mb-0"><%= birthDate %>
+                                </p>
                             </div>
                         </div>
                         <hr>
@@ -128,66 +153,42 @@
                     <div class="col-md-6">
                         <div class="card mb-4 mb-md-0">
                             <div class="card-body">
-                                <p class="mb-4"><span class="text-primary font-italic me-1">assigment</span> Project Status
-                                </p>
-                                <p class="mb-1" style="font-size: .77rem;">Web Design</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">Website Markup</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">One Page</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">Mobile Template</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">Backend API</p>
-                                <div class="progress rounded mb-2" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
+
+                                <form name="addBook" method="post"
+                                      action="${pageContext.request.contextPath}/bookServlet">
+                                    <p>Add new book</p>
+
+                                    <div class="form-outline mb-4">
+                                        <input type="text" id="title" name="title" class="form-control"
+                                               placeholder="Title" required/>
+                                        <span id="usernameError" style="color: red;"></span>
+                                    </div>
+
+                                    <div class="form-outline mb-4">
+                                        <input type="text" id="author" name="author" class="form-control"
+                                               placeholder="Author" required/>
+                                        <span id="passwordError" style="color: red;"></span>
+                                    </div>
+
+                                    <div class="text-center pt-1 mb-5 pb-1">
+                                        <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3"
+                                                type="submit">Add book
+                                        </button>
+                                    </div>
+
+                                </form>
+
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="card mb-4 mb-md-0">
                             <div class="card-body">
-                                <p class="mb-4"><span class="text-primary font-italic me-1">assigment</span> Project Status
-                                </p>
-                                <p class="mb-1" style="font-size: .77rem;">Web Design</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">Website Markup</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">One Page</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">Mobile Template</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">Backend API</p>
-                                <div class="progress rounded mb-2" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
+                                <p>List your books:</p>
+                                <% for (Book book : user.getBooks()) { %>
+                                <%= book.getTitle() %>
+                                <%= book.getAuthor() %><br>
+                                <% } %>
                             </div>
                         </div>
                     </div>
@@ -196,6 +197,13 @@
         </div>
     </div>
 </section>
+
+<style>
+    html,
+    body {
+        height: 100%;
+    }
+</style>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
