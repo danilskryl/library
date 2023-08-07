@@ -6,6 +6,9 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LibraryManager {
     private static final LibraryManager libraryManager = new LibraryManager();
     private final DBManager dbManager;
@@ -73,11 +76,44 @@ public class LibraryManager {
         }
     }
 
-    public void saveBook(Book book) {
+    public void updateUser(User user) {
+        try (Session session = dbManager.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.merge(user);
+            transaction.commit();
+        }
+    }
+
+    public void addBookToUser(Long userId, Long bookId) {
+        try (Session session = dbManager.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Book book = session.get(Book.class, bookId);
+            User user = session.get(User.class, userId);
+            book.setUser(user);
+            user.getBooks().add(book);
+            session.persist(book);
+            session.persist(user);
+            transaction.commit();
+        }
+    }
+
+    public List<Book> getUserBooks(Long id) {
+        try (Session session = dbManager.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Query<Book> query = session.createQuery("FROM Book WHERE user.id = :USER_ID", Book.class);
+            query.setParameter("USER_ID", id);
+            List<Book> books = new ArrayList<>(query.list());
+            transaction.commit();
+            return books;
+        }
+    }
+
+    public long saveBook(Book book) {
         try (Session session = dbManager.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             session.persist(book);
             transaction.commit();
+            return (long) session.getIdentifier(book);
         }
     }
 
