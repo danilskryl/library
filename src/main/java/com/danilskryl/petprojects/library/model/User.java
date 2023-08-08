@@ -28,6 +28,6 @@ public class User {
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Date birthDate;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Book> books;
 }

@@ -20,7 +20,7 @@ public class LoginServlet extends HttpServlet {
         String login = req.getParameter("login");
         String password = req.getParameter("password");
 
-        if (dbManager.isUserExist(login, password)) {
+        if (dbManager.isUserExist(login)) {
             User user = dbManager.getUserByLoginAndPassword(login, password);
 
             Cookie cookie = new Cookie("id", user.getId().toString());

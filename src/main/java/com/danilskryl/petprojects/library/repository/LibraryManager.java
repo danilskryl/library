@@ -35,8 +35,14 @@ public class LibraryManager {
         }
     }
 
-    public boolean isUserExist(String login, String password) {
-        return getUserByLoginAndPassword(login, password) != null;
+    public boolean isUserExist(String username) {
+        try (Session session = dbManager.getSessionFactory().openSession()) {
+            String hql = "FROM User WHERE username = :USERNAME";
+            Query<User> query = session.createQuery(hql, User.class);
+            query.setParameter("USERNAME", username);
+            User user = query.uniqueResult();
+            return user != null;
+        }
     }
 
     public User getUserByLoginAndPassword(String login, String password) {

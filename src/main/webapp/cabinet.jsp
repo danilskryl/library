@@ -34,6 +34,7 @@
     User user = dbManager.getUserById(id);
 
     request.setAttribute("user", user);
+    request.setAttribute("user_books", dbManager.getUserBooks(id));
 
     String firstName = user.getFirstName();
     String lastName = user.getLastName();
@@ -194,7 +195,7 @@
                         <div class="card mb-4 mb-md-0">
                             <div class="card-body">
                                 <p>List your books</p>
-                                <c:forEach var="book" items="${user.getBooks()}">
+                                <c:forEach var="book" items="${user_books}">
                                     <div class="book-entry" id="${book.getId()}">
 
                                         <span id="book-title-${book.getId()}">${book.getTitle()}</span> -
