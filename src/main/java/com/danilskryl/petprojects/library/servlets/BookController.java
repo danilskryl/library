@@ -3,7 +3,6 @@ package com.danilskryl.petprojects.library.servlets;
 
 import com.danilskryl.petprojects.library.model.Book;
 import com.danilskryl.petprojects.library.repository.LibraryManager;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
@@ -12,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebServlet("/bookServlet")
+@WebServlet(name = "BookControllerServlet", value = "/bookServlet")
 public class BookController extends HttpServlet {
     private final LibraryManager dbManager = LibraryManager.getInstance();
 
@@ -43,7 +42,31 @@ public class BookController extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doDelete(req, resp);
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Long bookId = Long.parseLong(req.getParameter("bookId"));
+        Long userId = Long.parseLong(req.getParameter("userId"));
+
+        dbManager.removeBook(bookId, userId);
+
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        String jsonResponse = "{\"message\": \"Книга успешно удалена\"}";
+        resp.getWriter().write(jsonResponse);
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Long bookId = Long.parseLong(req.getParameter("bookId"));
+        String title = req.getParameter("bookTitle");
+        String author = req.getParameter("bookAuthor");
+
+        dbManager.updateBook(bookId, title, author);
+
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        String jsonResponse = "{\"message\": \"Книга успешно обновлена\"}";
+        resp.getWriter().write(jsonResponse);
     }
 }

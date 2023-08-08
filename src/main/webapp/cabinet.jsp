@@ -1,12 +1,17 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="com.danilskryl.petprojects.library.model.User" %>
 <%@ page import="java.util.Date" %>
-<%@ page import="com.danilskryl.petprojects.library.model.Book" %>
 <%@ page import="com.danilskryl.petprojects.library.repository.LibraryManager" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Locale" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
-<html>
+<html class="html_style">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Library</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles/cabinet.css">
+    <link rel="stylesheet" href="styles/html_style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <link type="Image/x-icon" href="images/icon_book.svg" rel="icon">
@@ -28,14 +33,20 @@
 
     User user = dbManager.getUserById(id);
 
+    request.setAttribute("user", user);
+
     String firstName = user.getFirstName();
     String lastName = user.getLastName();
     String fullName = firstName + " " + lastName;
-    Date birthDate = user.getBirthDate();
+
+    Date date = user.getBirthDate();
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("en"));
+    String birthDate = dateFormat.format(date);
+
     String username = user.getUsername();
 %>
 
-<section style="background-color: #eee;">
+<section style="background-color: #eee; margin: 0; padding: 0; min-height: 100vh;">
     <div>
         <form action="${pageContext.request.contextPath}/logout" method="post"
               style="position: absolute; top: 10px; right: 10px;">
@@ -175,20 +186,127 @@
                                                 type="submit">Add book
                                         </button>
                                     </div>
-
                                 </form>
-
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="card mb-4 mb-md-0">
                             <div class="card-body">
-                                <p>List your books:</p>
-                                <% for (Book book : user.getBooks()) { %>
-                                <%= book.getTitle() %>
-                                <%= book.getAuthor() %><br>
-                                <% } %>
+                                <p>List your books</p>
+                                <c:forEach var="book" items="${user.getBooks()}">
+                                    <div class="book-entry" id="${book.getId()}">
+
+                                        <span id="book-title-${book.getId()}">${book.getTitle()}</span> -
+                                        <span id="book-author-${book.getId()}">${book.getAuthor()}</span>
+
+                                        <button class="edit-button" id="save-button-${book.getId()}"
+                                                style="display: none"
+                                                onclick="saveBook(${book.getId()})">
+                                            <img src="images/icon_save.svg" alt="Save" width="16" height="16"/>
+                                        </button>
+
+                                        <button class="edit-button" id="edit-button-${book.getId()}"
+                                                onclick="editBook(${book.getId()})">
+                                            <img src="images/icon_edit.svg" alt="Edit" width="16" height="16">
+                                        </button>
+
+                                        <button class="delete-button" id="delete-button-${book.getId()}"
+                                                onclick="deleteBook(${book.getId()}, ${user.getId()})">
+                                            <img src="images/icon_delete.svg" alt="Delete" width="16" height="16">
+                                        </button>
+
+                                    </div>
+                                </c:forEach>
+
+                                <script>
+                                    function deleteBook(bookId, userId) {
+                                        fetch("/bookServlet?bookId=" + bookId + "&userId=" + userId, {
+                                            method: "DELETE"
+                                        })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                // alert(data.message);
+                                                removeBookFromList(bookId);
+                                            }).catch(error => {
+                                                console.error("Ошибка удаления книги", error);
+                                            });
+                                    }
+
+                                    function removeBookFromList(bookId) {
+                                        let element = document.getElementById(bookId);
+                                        if (element) {
+                                            element.remove();
+                                        }
+                                    }
+                                </script>
+
+                                <script>
+                                    function editBook(bookId) {
+                                        hideButton("edit-button-" + bookId);
+                                        hideButton("delete-button-" + bookId);
+                                        showButton("save-button-" + bookId);
+
+                                        let titleSpan = document.getElementById("book-title-" + bookId);
+                                        let authorSpan = document.getElementById("book-author-" + bookId);
+
+                                        let titleInput = document.createElement("input");
+                                        titleInput.id = "temp-title-input-" + bookId;
+                                        titleInput.value = titleSpan.textContent;
+                                        let authorInput = document.createElement("input");
+                                        authorInput.id = "temp-author-input-" + bookId;
+                                        authorInput.value = authorSpan.textContent;
+
+                                        titleSpan.parentNode.replaceChild(titleInput, titleSpan);
+                                        authorSpan.parentNode.replaceChild(authorInput, authorSpan);
+                                    }
+
+                                    function saveBook(bookId) {
+                                        let titleInput = document.getElementById("temp-title-input-" + bookId);
+                                        let authorInput = document.getElementById("temp-author-input-" + bookId);
+
+                                        let title = titleInput.value;
+                                        let author = authorInput.value;
+
+                                        let newTitleSpan = document.createElement("span");
+                                        newTitleSpan.id = "book-title-" + bookId;
+                                        newTitleSpan.textContent = title;
+                                        let newAuthorSpan = document.createElement("span");
+                                        newAuthorSpan.id = "book-author-" + bookId;
+                                        newAuthorSpan.textContent = author;
+
+                                        titleInput.parentNode.replaceChild(newTitleSpan, titleInput);
+                                        authorInput.parentNode.replaceChild(newAuthorSpan, authorInput);
+
+                                        hideButton("save-button-" + bookId);
+                                        showButton("edit-button-" + bookId);
+                                        showButton("delete-button-" + bookId);
+
+                                        fetch("/bookServlet?bookId=" + bookId + "&bookTitle=" + title + "&bookAuthor=" + author, {
+                                            method: "PUT"
+                                        })
+                                            .then(response => response.json())
+                                            .then(data =>  {
+                                                // alert(data.message)
+                                        }).catch(error => {
+                                            console.error("Ошибка обновления книги", error);
+                                        });
+                                    }
+
+                                    function hideButton(buttonId) {
+                                        let button = document.getElementById(buttonId);
+                                        if (button) {
+                                            button.style.display = "none";
+                                        }
+                                    }
+
+                                    function showButton(buttonId) {
+                                        let button = document.getElementById(buttonId);
+                                        if (button) {
+                                            button.style.display = "block";
+                                        }
+                                    }
+                                </script>
                             </div>
                         </div>
                     </div>

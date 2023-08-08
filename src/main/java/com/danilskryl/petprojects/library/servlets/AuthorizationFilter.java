@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebFilter("/cabinet.jsp")
+@WebFilter(filterName = "AuthorizationFilter", value = "/cabinet.jsp")
 public class AuthorizationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
