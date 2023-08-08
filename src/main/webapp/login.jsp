@@ -1,23 +1,21 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html>
+<html class="html_style">
 <head>
+    <title>Library</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
     <link
             rel="apple-touch-icon"
             sizes="180x180"
             href="images/icon_book.svg"
     />
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
     <link rel="shortcut icon" href="images/icon_book.svg"/>
-
-    <link rel="stylesheet" href="login_page.css">
+    <link rel="stylesheet" href="styles/login_page.css">
+    <link rel="stylesheet" href="styles/html_style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    <title>Library</title>
-
     <script>
         function redirectToRegistration() {
             window.location.href = "registration.jsp";

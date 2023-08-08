@@ -3,8 +3,6 @@ package com.danilskryl.petprojects.library.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.annotations.LazyCollection;
 
 @Entity
 @Table(name = "library_books", schema = "pet_project")

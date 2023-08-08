@@ -35,23 +35,6 @@ public class LibraryManager {
         }
     }
 
-    public void removeUser(Long id) {
-        try (Session session = dbManager.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-            User user = session.get(User.class, id);
-            session.remove(user);
-            transaction.commit();
-        }
-    }
-
-    public void removeUser(User user) {
-        try (Session session = dbManager.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-            session.remove(user);
-            transaction.commit();
-        }
-    }
-
     public boolean isUserExist(String login, String password) {
         return getUserByLoginAndPassword(login, password) != null;
     }
@@ -67,20 +50,6 @@ public class LibraryManager {
             } catch (Exception e) {
                 return null;
             }
-        }
-    }
-
-    public Book getBookById(Long id) {
-        try (Session session = dbManager.getSessionFactory().openSession()) {
-            return session.get(Book.class, id);
-        }
-    }
-
-    public void updateUser(User user) {
-        try (Session session = dbManager.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-            session.merge(user);
-            transaction.commit();
         }
     }
 
@@ -117,19 +86,31 @@ public class LibraryManager {
         }
     }
 
-    public void removeBook(Long id) {
+    public void removeBook(Long id, Long userId) {
         try (Session session = dbManager.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
+
+            User user = session.get(User.class, userId);
+            List<Book> books = user.getBooks();
+            books.removeIf(book -> book.getId().equals(id));
+            session.merge(user);
+
             Book book = session.get(Book.class, id);
-            session.remove(book);
+            if (book != null) {
+                session.remove(book);
+            }
+
             transaction.commit();
         }
     }
 
-    public void removeBook(Book book) {
+    public void updateBook(Long id, String title, String author) {
         try (Session session = dbManager.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            session.remove(book);
+            Book book = session.get(Book.class, id);
+            book.setTitle(title);
+            book.setAuthor(author);
+            session.merge(book);
             transaction.commit();
         }
     }

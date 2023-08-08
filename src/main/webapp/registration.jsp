@@ -1,11 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<html>
+<html class="html_style">
 <head>
     <title>Join to Library</title>
     <link type="Image/x-icon" href="images/icon_book.svg" rel="icon">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="registration.css"/>
-    <link rel="stylesheet" href="login_page.css"/>
+    <link rel="stylesheet" href="styles/registration.css"/>
+    <link rel="stylesheet" href="styles/login_page.css"/>
+    <link rel="stylesheet" href="styles/html_style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 </head>
@@ -70,7 +71,10 @@
                                         <input class="form-check-input me-2" type="checkbox" value=""
                                                id="form2Example3c" required/>
                                         <label class="form-check-label" for="form2Example3c">
-                                            I agree all statements in <a href="#!">Terms of service</a>
+                                            I agree all statements in
+                                            <span style="cursor: pointer; text-decoration: underline;"
+                                                  onclick="openLinkInNewTab('${pageContext.request.contextPath}/terms.jsp')">
+                                            Terms of service</span>
                                         </label>
                                     </div>
 
@@ -79,6 +83,14 @@
                                     </div>
 
                                 </form>
+
+                                <div>
+                                    <label class="type-name-label">
+                                        <span style="cursor: pointer; text-decoration: underline; color: deepskyblue"
+                                              onclick="redirectToLogin()">I already have an account</span>
+
+                                    </label>
+                                </div>
 
                             </div>
 
@@ -94,6 +106,16 @@
         </div>
     </div>
 </section>
+
+<script>
+    function openLinkInNewTab(url) {
+        window.open(url, '_blank');
+    }
+
+    function redirectToLogin() {
+        window.location.href = "login.jsp";
+    }
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
