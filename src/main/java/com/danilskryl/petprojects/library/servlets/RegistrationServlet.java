@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,10 +17,13 @@ import java.util.Date;
 @WebServlet(name = "RegistrationServlet", value = "/registration")
 public class RegistrationServlet extends HttpServlet {
     private final LibraryManager dbManager = LibraryManager.getInstance();
+    private final Logger LOG = LoggerFactory.getLogger(RegistrationServlet.class);
 
     @SneakyThrows
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+        LOG.debug("Registration started");
+
         String username = req.getParameter("username");
         String password = req.getParameter("password");
         String firstName = req.getParameter("firstName");
@@ -37,6 +42,8 @@ public class RegistrationServlet extends HttpServlet {
         user.setBirthDate(birthDate);
 
         dbManager.saveUser(user);
+
+        LOG.info("User [{}] created and saved", username);
 
         req.getRequestDispatcher("login.jsp").forward(req, resp);
     }

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+
+    <Properties>
+        <Property name="LOG_DIR">/Users/danilskryl/Documents/GitHub/library/logs</Property>
+    </Properties>
+
+    <Appenders>
+        <RollingFile
+                name="LogToFile"
+                fileName="${LOG_DIR}/library.log"
+                filePattern="${LOG_DIR}/library.%d{yyyy-MM-dd}.log"
+                ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p: %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${LOG_DIR}" maxDepth="2">
+                    <IfFileName glob="library.*.log" />
+                    <IfLastModified age="3d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.danilskryl.petprojects.library" level="debug" additivity="false">
+            <AppenderRef ref="LogToFile"/>
+        </Logger>
+
+        <Root level="error">
+            <AppenderRef ref="LogToFile"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
