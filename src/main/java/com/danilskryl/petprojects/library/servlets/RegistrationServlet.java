@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -40,6 +41,7 @@ public class RegistrationServlet extends HttpServlet {
         user.setPassword(password);
         user.setBooks(new ArrayList<>());
         user.setBirthDate(birthDate);
+        user.setJoinDate(LocalDateTime.now());
 
         dbManager.saveUser(user);
 

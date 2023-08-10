@@ -5,6 +5,12 @@
 <%@ page import="com.danilskryl.petprojects.library.repository.LibraryManager" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Locale" %>
+<%@ page import="com.danilskryl.petprojects.library.model.Book" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.time.LocalDateTime" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="org.slf4j.Logger" %>
+<%@ page import="org.slf4j.LoggerFactory" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html class="html_style">
 <head>
@@ -19,6 +25,7 @@
 <body>
 
 <%
+    final Logger LOG = LoggerFactory.getLogger("Cabinet.jsp");
     final LibraryManager dbManager = LibraryManager.getInstance();
 
     Cookie[] cookies = request.getCookies();
@@ -32,9 +39,12 @@
     }
 
     User user = dbManager.getUserById(id);
+    List<Book> bookList = dbManager.getUserBooks(id);
+
+    LOG.info("User [{}] log in to account", id);
 
     request.setAttribute("user", user);
-    request.setAttribute("user_books", dbManager.getUserBooks(id));
+    request.setAttribute("user_books", bookList);
 
     String firstName = user.getFirstName();
     String lastName = user.getLastName();
@@ -43,6 +53,10 @@
     Date date = user.getBirthDate();
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("en"));
     String birthDate = dateFormat.format(date);
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.ENGLISH);
+    LocalDateTime joinDateUser = user.getJoinDate();
+    String joinDate =  formatter.format(joinDateUser);
 
     String username = user.getUsername();
 %>
@@ -74,8 +88,8 @@
                              class="rounded-circle img-fluid" style="width: 150px;">
                         <h5 class="my-3"><%= fullName %>
                         </h5>
-                        <p class="text-muted mb-1">Full Stack Developer</p>
-                        <p class="text-muted mb-4">Bay Area, San Francisco, CA</p>
+                        <p class="text-muted mb-1">Online</p>
+                        <p class="text-muted mb-4">Joined <%= joinDate %></p>
                         <div class="d-flex justify-content-center mb-2">
                             <button type="button" class="btn btn-primary">Follow</button>
                             <button type="button" class="btn btn-outline-primary ms-1">Message</button>
@@ -87,23 +101,11 @@
                         <ul class="list-group list-group-flush rounded-3">
                             <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                                 <i class="fas fa-globe fa-lg text-warning"></i>
-                                <p class="mb-0">https://mdbootstrap.com</p>
+                                <p class="mb-0">t.me/restill</p>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                                 <i class="fab fa-github fa-lg" style="color: #333333;"></i>
-                                <p class="mb-0">mdbootstrap</p>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
-                                <p class="mb-0">@mdbootstrap</p>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
-                                <p class="mb-0">mdbootstrap</p>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
-                                <p class="mb-0">mdbootstrap</p>
+                                <p class="mb-0">youtube.com</p>
                             </li>
                         </ul>
                     </div>
@@ -134,15 +136,6 @@
                         <hr>
                         <div class="row">
                             <div class="col-sm-3">
-                                <p class="mb-0">Phone</p>
-                            </div>
-                            <div class="col-sm-9">
-                                <p class="text-muted mb-0">-</p>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-sm-3">
                                 <p class="mb-0">Birthday</p>
                             </div>
                             <div class="col-sm-9">
@@ -153,10 +146,10 @@
                         <hr>
                         <div class="row">
                             <div class="col-sm-3">
-                                <p class="mb-0">Address</p>
+                                <p class="mb-0">Amount books</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
+                                <p class="text-muted mb-0"><%= bookList.size() %></p>
                             </div>
                         </div>
                     </div>
@@ -168,7 +161,7 @@
 
                                 <form name="addBook" method="post"
                                       action="${pageContext.request.contextPath}/bookServlet">
-                                    <p>Add new book</p>
+                                    <h6>Add new book</h6>
 
                                     <div class="form-outline mb-4">
                                         <input type="text" id="title" name="title" class="form-control"
@@ -194,7 +187,7 @@
                     <div class="col-md-6">
                         <div class="card mb-4 mb-md-0">
                             <div class="card-body">
-                                <p>List your books</p>
+                                <h6>List your books</h6>
                                 <c:forEach var="book" items="${user_books}">
                                     <div class="book-entry" id="${book.getId()}">
 
@@ -217,11 +210,15 @@
                                             <img src="images/icon_delete.svg" alt="Delete" width="16" height="16">
                                         </button>
 
+                                        <hr>
+
                                     </div>
                                 </c:forEach>
 
                                 <script>
                                     function deleteBook(bookId, userId) {
+                                        <% LOG.debug("User [{}] delete book", id); %>
+
                                         fetch("/bookServlet?bookId=" + bookId + "&userId=" + userId, {
                                             method: "DELETE"
                                         })
@@ -244,6 +241,8 @@
 
                                 <script>
                                     function editBook(bookId) {
+                                        <% LOG.debug("User [{}] update book", id); %>
+
                                         hideButton("edit-button-" + bookId);
                                         hideButton("delete-button-" + bookId);
                                         showButton("save-button-" + bookId);
@@ -263,6 +262,8 @@
                                     }
 
                                     function saveBook(bookId) {
+                                        <% LOG.debug("User [{}] save book after update", id); %>
+
                                         let titleInput = document.getElementById("temp-title-input-" + bookId);
                                         let authorInput = document.getElementById("temp-author-input-" + bookId);
 
