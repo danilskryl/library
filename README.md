@@ -1,2 +1,2 @@
 <h2>Library</h2>
-<p>Pet project</p>
+<p>Library made with Jakarta. It is possible to register, log into your account, add, delete and edit books.</p>
